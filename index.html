@@ -1883,16 +1883,68 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
 
 <script>
 /* ═══ SUPABASE CONFIG ═══ */
-var SB_URL    = 'https://arcvzffagsauslonsmcw.supabase.co';      
+var SB_URL    = 'https://arcvzffagsauslonsmcw.supabase.co';
 var SB_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyY3Z6ZmZhZ3NhdXNsb25zbWN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMzUxMzUsImV4cCI6MjA5MTcxMTEzNX0.pfbrd2povmPdkUBo1jQX5W-D1gMwloxNxRoZ1CKBtBc';
 var SB_TABLE  = 'portfolio_links';
+var SB_BUCKET = 'portfolio-files'; /* ✅ FIX 1 — was missing, causing all uploads to fail */
 var SB_READY  = true; /* keys configured */
 
 /* ── Setup banner ─────────────────────────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', function() {
   loadAllFilesFromCloud();
   restoreCS3Link();
+
+  /* ✅ FIX 2 — lightbox click listener moved inside DOMContentLoaded */
+  var lb = document.getElementById('lb');
+  if (lb) {
+    lb.addEventListener('click', function(e) {
+      if (e.target === lb) closeLB();
+    });
+  }
+
+  /* ✅ FIX 3 — nav dots setup moved inside DOMContentLoaded */
+  var SECS = ['hero','about','skills','knowledge','experience','work','casestudies','cs-upload','creatives','content','video','websites','perf','contact'];
+  var dots = document.querySelectorAll('.dot');
+  dots.forEach(function(d) {
+    d.addEventListener('click', function() {
+      var el = document.getElementById(d.dataset.t);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+  var dio = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        dots.forEach(function(d) { d.classList.remove('on'); });
+        var m = document.querySelector('.dot[data-t="' + e.target.id + '"]');
+        if (m) m.classList.add('on');
+      }
+    });
+  }, { threshold: 0.35 });
+  SECS.forEach(function(id) { var el = document.getElementById(id); if (el) dio.observe(el); });
+
+  /* ✅ FIX 4 — drag & drop setup moved inside DOMContentLoaded */
+  document.querySelectorAll('.uzone').forEach(function(z) {
+    z.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      z.style.borderColor = 'var(--ac)';
+      z.style.background  = 'var(--acs)';
+    });
+    z.addEventListener('dragleave', function() {
+      z.style.borderColor = '';
+      z.style.background  = '';
+    });
+    z.addEventListener('drop', function(e) {
+      e.preventDefault();
+      z.style.borderColor = '';
+      z.style.background  = '';
+      var id = z.id.replace('zn-', '');
+      processFiles(e.dataTransfer.files, id);
+    });
+  });
 });
+
+/* keydown listener on document is safe outside DOMContentLoaded */
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLB(); });
 
 /* ═══════════════════════════════════════════════════════════════════════
    SUPABASE HELPERS
@@ -2249,10 +2301,6 @@ function closeLB() {
   document.getElementById('lb').classList.remove('on');
   document.getElementById('lbc').innerHTML = '';
 }
-document.getElementById('lb').addEventListener('click', function(e) {
-  if (e.target === document.getElementById('lb')) closeLB();
-});
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLB(); });
 
 /* ═══════════════════════════════════════════════════════════════════════
    SKILL BARS
@@ -2263,50 +2311,6 @@ window.addEventListener('load', function() {
       setTimeout(function() { f.style.width = f.dataset.w + '%'; }, 300 + i * 80);
     });
   }, 400);
-});
-
-/* ═══════════════════════════════════════════════════════════════════════
-   NAV DOTS
-═══════════════════════════════════════════════════════════════════════ */
-var SECS = ['hero','about','skills','knowledge','experience','work','casestudies','cs-upload','creatives','content','video','websites','perf','contact'];
-var dots = document.querySelectorAll('.dot');
-dots.forEach(function(d) {
-  d.addEventListener('click', function() {
-    var el = document.getElementById(d.dataset.t);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  });
-});
-var dio = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) {
-    if (e.isIntersecting) {
-      dots.forEach(function(d) { d.classList.remove('on'); });
-      var m = document.querySelector('.dot[data-t="' + e.target.id + '"]');
-      if (m) m.classList.add('on');
-    }
-  });
-}, { threshold: 0.35 });
-SECS.forEach(function(id) { var el = document.getElementById(id); if (el) dio.observe(el); });
-
-/* ═══════════════════════════════════════════════════════════════════════
-   DRAG & DROP  (static zones)
-═══════════════════════════════════════════════════════════════════════ */
-document.querySelectorAll('.uzone').forEach(function(z) {
-  z.addEventListener('dragover', function(e) {
-    e.preventDefault();
-    z.style.borderColor = 'var(--ac)';
-    z.style.background  = 'var(--acs)';
-  });
-  z.addEventListener('dragleave', function() {
-    z.style.borderColor = '';
-    z.style.background  = '';
-  });
-  z.addEventListener('drop', function(e) {
-    e.preventDefault();
-    z.style.borderColor = '';
-    z.style.background  = '';
-    var id = z.id.replace('zn-', '');
-    processFiles(e.dataTransfer.files, id);
-  });
 });
 </script>
 </body>
