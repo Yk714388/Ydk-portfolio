@@ -43,7 +43,6 @@ section{padding:96px 192px;position:relative;overflow:hidden;}
 .rule{width:100%;height:1px;background:var(--bo);margin:44px 0;}
 .bt{font-size:14px;line-height:1.8;color:var(--mu);max-width:720px;}
 
-/* FADE — starts visible, animates in on scroll */
 .fi{opacity:1;transform:none;}
 
 /* HERO */
@@ -205,10 +204,44 @@ section{padding:96px 192px;position:relative;overflow:hidden;}
 /* FILE PREVIEWS */
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-top:20px;min-height:0;}
 .fthumb{background:var(--bg3);border:1px solid var(--bo);aspect-ratio:4/3;position:relative;overflow:hidden;cursor:pointer;}
-.fthumb:hover{border-color:rgba(255,255,255,.3);}
-.fthumb img,.fthumb video{width:100%;height:100%;object-fit:cover;}
-.ftov{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
-.fthumb:hover .ftov{opacity:1;}
+.fthumb:hover{border-color:rgba(255,255,255,.22);}
+.fthumb img,.fthumb video{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+
+/* ── OVERLAY: shown only via JS on long-press (no hover rule) ── */
+.ftov{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.8);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;
+  opacity:0;transition:opacity .28s;
+  pointer-events:none;
+}
+.ftov.lp-active{opacity:1;pointer-events:auto;}
+
+/* Long-press charging ring */
+.lp-ring{
+  position:absolute;inset:0;pointer-events:none;z-index:5;
+}
+.lp-ring svg{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
+.lp-ring circle{
+  stroke-dasharray:188;
+  stroke-dashoffset:188;
+  transition:stroke-dashoffset linear;
+}
+.lp-ring.charging circle{stroke-dashoffset:0;}
+
+/* Hint label above buttons in overlay */
+.ftov-hint{
+  font-size:10px;letter-spacing:.08em;
+  color:rgba(255,255,255,.5);
+  text-transform:uppercase;
+  text-align:center;
+  max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
 .ftrm{background:var(--ac);border:none;color:white;padding:6px 14px;font-size:11px;cursor:pointer;}
 .ftnm{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:5px 8px;font-size:10px;color:rgba(255,255,255,.65);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdoc{background:var(--bg3);border:1px solid var(--bo);padding:14px;display:flex;align-items:center;gap:12px;transition:border-color .25s;cursor:pointer;margin-top:8px;}
@@ -217,6 +250,16 @@ section{padding:96px 192px;position:relative;overflow:hidden;}
 .fdnm{font-size:12.5px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdrm{background:none;border:none;color:var(--mu);cursor:pointer;font-size:16px;transition:color .2s;flex-shrink:0;}
 .fdrm:hover{color:var(--ac);}
+
+/* Long-press hint tooltip on thumbnails */
+.lp-hint{
+  position:absolute;top:6px;left:6px;
+  font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);background:rgba(0,0,0,.5);
+  padding:2px 6px;pointer-events:none;z-index:4;
+  opacity:0;transition:opacity .3s;
+}
+.fthumb:hover .lp-hint{opacity:1;}
 
 /* CASE STUDY UPLOAD */
 #cs-upload{background:var(--bg);}
@@ -513,7 +556,7 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
   </div>
 </section>
 
-<!-- CASE STUDIES -->
+<!-- CASE STUDIES (unchanged - keeping original iframes) -->
 <section id="casestudies">
   <div class="lbl">Case Studies</div>
   <h2 class="h2">Scaling engagement<br>from zero to <span class="r">60%</span></h2>
@@ -552,7 +595,6 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
       <div class="or2"><div><div class="ov">GCC</div><div class="ok">Region Covered</div></div><div><div class="ov">12mo</div><div class="ok">Consistent Delivery</div></div><div><div class="ov">&minus;18%</div><div class="ok">CPC Reduction</div></div></div>
     </div>
   </div>
-
   <div class="rule"></div>
   <div class="lbl">Case Study &middot; 03</div>
   <h2 class="h2">Performance Creative<br>Tracking <span class="r">System</span></h2>
@@ -566,617 +608,7 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
       <div class="cspan"><h3>The Solution</h3><p>A custom editable public website referencing live charts &mdash; built after rejecting two prior approaches that lacked visual quality or operational efficiency.</p></div>
     </div>
   </div>
-  <!-- Embedded Case Study Visual Flow -->
-  <div style="margin:36px 0 0;border:1px solid var(--bo);border-radius:2px;overflow:hidden;background:#080810;">
-    <div style="padding:14px 22px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);">
-      <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ac);font-weight:600;">Case Study Flow</span>
-      <span style="font-size:9px;color:rgba(255,255,255,0.25);letter-spacing:.06em;">Performance Creative Tracking System</span>
-    </div>
-    <iframe
-      srcdoc="<!DOCTYPE html>
-<html>
-<head>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&amp;family=Space+Mono:wght@400;700&amp;family=Bebas+Neue&amp;display=swap');
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: #080810;
-    font-family: 'Space Mono', monospace;
-    overflow-x: hidden;
-    min-height: 100vh;
-  }
-
-  .bg-grid {
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-  }
-
-  .canvas {
-    position: relative;
-    padding: 40px 20px 60px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  /* TITLE */
-  .title-block {
-    text-align: center;
-    margin-bottom: 60px;
-    animation: fadeDown 0.8s ease both;
-  }
-  .title-block .label {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 6px;
-    color: #FF3CAC;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    display: block;
-  }
-  .title-block h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(36px, 6vw, 72px);
-    color: #fff;
-    letter-spacing: 4px;
-    line-height: 1;
-    text-shadow: 0 0 40px rgba(255,60,172,0.5);
-  }
-  .title-block h1 span { color: #FF3CAC; }
-
-  /* FLOW */
-  .flow {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: relative;
-  }
-
-  /* ROW */
-  .row {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    position: relative;
-  }
-
-  /* CONNECTOR LINE */
-  .v-connector {
-    width: 4px;
-    background: linear-gradient(180deg, #FF3CAC, #784BA0);
-    margin: 0 auto;
-    height: 40px;
-    position: relative;
-    left: 0;
-    animation: growDown 0.4s ease both;
-  }
-
-  .v-connector::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 10px solid #784BA0;
-  }
-
-  /* CARD BASE */
-  .card {
-    position: relative;
-    border-radius: 4px;
-    padding: 28px 32px;
-    flex: 1;
-    overflow: hidden;
-    cursor: default;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .card:hover {
-    transform: translateY(-4px) scale(1.01);
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: inherit;
-    filter: blur(20px);
-    opacity: 0.3;
-    z-index: -1;
-    transform: scale(1.1);
-  }
-
-  .card .tag {
-    font-size: 9px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    opacity: 0.7;
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  .card h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(22px, 3.5vw, 36px);
-    letter-spacing: 2px;
-    line-height: 1.1;
-    margin-bottom: 10px;
-  }
-
-  .card p {
-    font-size: 12px;
-    line-height: 1.7;
-    opacity: 0.85;
-  }
-
-  .card .badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 2px;
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-top: 14px;
-  }
-
-  .card .number {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 120px;
-    position: absolute;
-    right: -10px;
-    bottom: -20px;
-    opacity: 0.06;
-    line-height: 1;
-    pointer-events: none;
-    letter-spacing: -4px;
-  }
-
-  /* CARD THEMES */
-  .card-problem {
-    background: linear-gradient(135deg, #1a0510 0%, #2d0a20 100%);
-    border: 2px solid #FF3CAC;
-    box-shadow: 0 0 30px rgba(255,60,172,0.2), inset 0 0 30px rgba(255,60,172,0.05);
-    color: #fff;
-  }
-  .card-problem:hover { box-shadow: 0 0 50px rgba(255,60,172,0.4); }
-  .card-problem .tag { color: #FF3CAC; }
-  .card-problem h2 { color: #FF3CAC; text-shadow: 0 0 20px rgba(255,60,172,0.5); }
-
-  .card-brain {
-    background: linear-gradient(135deg, #0d0a20 0%, #1a1040 100%);
-    border: 2px solid #784BA0;
-    box-shadow: 0 0 30px rgba(120,75,160,0.2);
-    color: #fff;
-  }
-  .card-brain:hover { box-shadow: 0 0 50px rgba(120,75,160,0.4); }
-  .card-brain .tag { color: #a97fd4; }
-  .card-brain h2 { color: #c89fff; }
-
-  .card-stage {
-    background: linear-gradient(135deg, #080d1a 0%, #0d1830 100%);
-    border: 2px solid #2196F3;
-    box-shadow: 0 0 30px rgba(33,150,243,0.15);
-    color: #fff;
-  }
-  .card-stage:hover { box-shadow: 0 0 50px rgba(33,150,243,0.35); }
-  .card-stage .tag { color: #64B5F6; }
-  .card-stage h2 { color: #90CAF9; }
-
-  .card-rejected {
-    background: linear-gradient(135deg, #1a0d00 0%, #2d1500 100%);
-    border: 2px dashed #FF6D00;
-    box-shadow: 0 0 20px rgba(255,109,0,0.15);
-    color: #fff;
-    opacity: 0.9;
-  }
-  .card-rejected .tag { color: #FF6D00; }
-  .card-rejected h2 { color: #FFB74D; }
-  .card-rejected .badge { background: #FF6D00; color: #000; }
-
-  .card-accepted {
-    background: linear-gradient(135deg, #001a10 0%, #003320 100%);
-    border: 2px solid #00E676;
-    box-shadow: 0 0 30px rgba(0,230,118,0.2);
-    color: #fff;
-  }
-  .card-accepted:hover { box-shadow: 0 0 50px rgba(0,230,118,0.4); }
-  .card-accepted .tag { color: #00E676; }
-  .card-accepted h2 { color: #69F0AE; }
-  .card-accepted .badge { background: #00E676; color: #000; }
-
-  .card-warn {
-    background: linear-gradient(135deg, #1a0808 0%, #300a0a 100%);
-    border: 2px solid #FF1744;
-    box-shadow: 0 0 30px rgba(255,23,68,0.2);
-    color: #fff;
-  }
-  .card-warn .tag { color: #FF5252; }
-  .card-warn h2 { color: #FF8A80; }
-
-  .card-final {
-    background: linear-gradient(135deg, #000d1a 0%, #001a40 100%);
-    border: 3px solid #00B0FF;
-    box-shadow: 0 0 40px rgba(0,176,255,0.3), 0 0 80px rgba(0,176,255,0.1);
-    color: #fff;
-  }
-  .card-final:hover { box-shadow: 0 0 60px rgba(0,176,255,0.5); }
-  .card-final .tag { color: #00B0FF; }
-  .card-final h2 { color: #80D8FF; text-shadow: 0 0 20px rgba(0,176,255,0.5); }
-
-  .card-outcome {
-    background: linear-gradient(135deg, #001a0d 0%, #003520 100%);
-    border: 3px solid #00E676;
-    box-shadow: 0 0 50px rgba(0,230,118,0.3), 0 0 100px rgba(0,230,118,0.1);
-    color: #fff;
-  }
-  .card-outcome:hover { box-shadow: 0 0 80px rgba(0,230,118,0.5); }
-  .card-outcome .tag { color: #00E676; }
-  .card-outcome h2 { color: #B9F6CA; text-shadow: 0 0 20px rgba(0,230,118,0.5); }
-
-  .card-improve {
-    background: linear-gradient(135deg, #0d0800 0%, #1a1000 100%);
-    border: 2px dashed #FFD600;
-    box-shadow: 0 0 30px rgba(255,214,0,0.15);
-    color: #fff;
-  }
-  .card-improve:hover { box-shadow: 0 0 50px rgba(255,214,0,0.3); }
-  .card-improve .tag { color: #FFD600; }
-  .card-improve h2 { color: #FFF59D; }
-
-  /* TWO COLS */
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    width: 100%;
-  }
-
-  /* H-CONNECTOR between two cols */
-  .h-split {
-    position: relative;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .h-split::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 2px;
-    height: 20px;
-    background: linear-gradient(180deg, #784BA0, #2196F3);
-  }
-
-  .h-split::after {
-    content: '';
-    position: absolute;
-    top: 20px;
-    left: 25%;
-    width: 50%;
-    height: 2px;
-    background: linear-gradient(90deg, #2196F3, #FF6D00);
-  }
-
-  .h-split .dot-left, .h-split .dot-right {
-    position: absolute;
-    top: 18px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-  }
-
-  .h-split .dot-left { left: 25%; background: #2196F3; box-shadow: 0 0 6px #2196F3; }
-  .h-split .dot-right { right: 25%; background: #FF6D00; box-shadow: 0 0 6px #FF6D00; }
-
-  .h-split .arrow-left, .h-split .arrow-right {
-    position: absolute;
-    bottom: 0;
-  }
-  .h-split .arrow-left {
-    left: calc(25% - 5px);
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 8px solid #2196F3;
-  }
-  .h-split .arrow-right {
-    right: calc(25% - 5px);
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 8px solid #FF6D00;
-  }
-
-  /* MERGE CONNECTOR */
-  .merge {
-    position: relative;
-    height: 40px;
-  }
-  .merge::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 25%;
-    width: 50%;
-    height: 2px;
-    background: linear-gradient(90deg, #00E676, #FF1744);
-  }
-  .merge::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 2px;
-    height: 30px;
-    background: linear-gradient(180deg, #FF1744, #00B0FF);
-  }
-
-  .merge .arrow-down {
-    position: absolute;
-    bottom: 0;
-    left: calc(50% - 5px);
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 8px solid #00B0FF;
-  }
-
-  /* CHECK LIST */
-  .check-list { list-style: none; margin-top: 12px; }
-  .check-list li {
-    font-size: 12px;
-    padding: 3px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0.9;
-  }
-  .check-list li::before {
-    content: '▶';
-    font-size: 8px;
-    color: #00E676;
-    flex-shrink: 0;
-  }
-
-  /* GLOW PULSE ANIMATION ON FINAL CARDS */
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 40px rgba(0,230,118,0.3), 0 0 80px rgba(0,230,118,0.1); }
-    50% { box-shadow: 0 0 60px rgba(0,230,118,0.5), 0 0 120px rgba(0,230,118,0.2); }
-  }
-  .card-outcome { animation: pulseGlow 3s ease-in-out infinite; }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .card { animation: fadeUp 0.5s ease both; }
-  .row:nth-child(1) .card { animation-delay: 0.1s; }
-  .row:nth-child(2) .card { animation-delay: 0.2s; }
-  .row:nth-child(3) .card { animation-delay: 0.3s; }
-  .row:nth-child(4) .card { animation-delay: 0.4s; }
-  .row:nth-child(5) .card { animation-delay: 0.5s; }
-  .row:nth-child(6) .card { animation-delay: 0.6s; }
-  .row:nth-child(7) .card { animation-delay: 0.7s; }
-  .row:nth-child(8) .card { animation-delay: 0.8s; }
-
-  /* ICON CIRCLE */
-  .icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin-bottom: 14px;
-    flex-shrink: 0;
-  }
-
-  .divider-label {
-    text-align: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 11px;
-    letter-spacing: 5px;
-    opacity: 0.3;
-    color: #fff;
-    margin: 4px 0;
-  }
-
-  /* SCANLINE OVERLAY */
-  .scanline {
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(0,0,0,0.03) 3px,
-      rgba(0,0,0,0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 999;
-  }
-</style>
-</head>
-<body>
-<div class=&quot;bg-grid&quot;></div>
-<div class=&quot;scanline&quot;></div>
-
-<div class=&quot;canvas&quot;>
-
-  <!-- TITLE -->
-  <div class=&quot;title-block&quot;>
-    <span class=&quot;label&quot;>// Case Study //</span>
-    <h1>Performance <span>Creative</span><br>Tracking System</h1>
-  </div>
-
-  <div class=&quot;flow&quot;>
-
-    <!-- PROBLEM -->
-    <div class=&quot;row&quot;>
-      <div class=&quot;card card-problem&quot; style=&quot;max-width:600px;margin:0 auto;width:100%&quot;>
-        <div class=&quot;icon&quot; style=&quot;background:rgba(255,60,172,0.15);border:1px solid #FF3CAC;&quot;>🎯</div>
-        <span class=&quot;tag&quot;>// 01 — Origin //</span>
-        <h2>THE PROBLEM</h2>
-        <p>No efficient system existed for compiling performance creative tracking data on a <strong style=&quot;color:#FF3CAC&quot;>weekly &amp; monthly</strong> basis. Data was scattered, unrepresented, and impossible to illustrate clearly.</p>
-        <div class=&quot;number&quot;>01</div>
-      </div>
-    </div>
-
-    <div class=&quot;v-connector&quot; style=&quot;height:40px;background:linear-gradient(180deg,#FF3CAC,#784BA0)&quot;></div>
-
-    <!-- BRAINSTORM -->
-    <div class=&quot;row&quot;>
-      <div class=&quot;card card-brain&quot; style=&quot;max-width:600px;margin:0 auto;width:100%&quot;>
-        <div class=&quot;icon&quot; style=&quot;background:rgba(120,75,160,0.2);border:1px solid #784BA0;&quot;>🧠</div>
-        <span class=&quot;tag&quot;>// 02 — Ideation //</span>
-        <h2>BRAINSTORM</h2>
-        <p>Team ideated solutions to <strong style=&quot;color:#c89fff&quot;>compile, visualise</strong> and <strong style=&quot;color:#c89fff&quot;>represent</strong> the required data across time periods — leading to two distinct solution attempts.</p>
-        <div class=&quot;number&quot;>02</div>
-      </div>
-    </div>
-
-    <!-- SPLIT CONNECTOR -->
-    <div class=&quot;h-split&quot;>
-      <div class=&quot;dot-left&quot;></div>
-      <div class=&quot;dot-right&quot;></div>
-      <div class=&quot;arrow-left&quot;></div>
-      <div class=&quot;arrow-right&quot;></div>
-    </div>
-    <div class=&quot;divider-label&quot;>— TWO PATHS EXPLORED —</div>
-
-    <!-- STAGE 1 + 2 SIDE BY SIDE -->
-    <div style=&quot;margin-top:10px&quot;>
-      <div class=&quot;two-col&quot;>
-        <div class=&quot;card card-stage&quot;>
-          <div class=&quot;icon&quot; style=&quot;background:rgba(33,150,243,0.15);border:1px solid #2196F3;&quot;>📊</div>
-          <span class=&quot;tag&quot;>// Stage 1 //</span>
-          <h2>CHARTS FROM<br>SHEETS</h2>
-          <p>Directly generated charts from Google Sheets data exports — fast to build, but visually limited.</p>
-          <span class=&quot;badge&quot; style=&quot;background:#FF6D00;color:#000;&quot;>✕ REJECTED</span>
-          <div class=&quot;number&quot;>1</div>
-        </div>
-        <div class=&quot;card card-stage&quot; style=&quot;border-color:#FF6D00;box-shadow:0 0 20px rgba(255,109,0,0.15)&quot;>
-          <div class=&quot;icon&quot; style=&quot;background:rgba(255,109,0,0.15);border:1px solid #FF6D00;&quot;>📉</div>
-          <span class=&quot;tag&quot;>// Result //</span>
-          <h2>NOT GREAT<br>LOOKING</h2>
-          <p>The output lacked visual polish and design quality. The team and stakeholders <strong style=&quot;color:#FFB74D&quot;>rejected the result</strong> — not fit for presentation.</p>
-          <div class=&quot;number&quot;>✕</div>
-        </div>
-      </div>
-
-      <!-- SECOND ROW -->
-      <div style=&quot;height:24px;position:relative;&quot;>
-        <div style=&quot;position:absolute;left:25%;top:0;width:2px;height:24px;background:linear-gradient(180deg,#2196F3,#00E676)&quot;></div>
-        <div style=&quot;position:absolute;right:25%;top:0;width:2px;height:24px;background:linear-gradient(180deg,#FF6D00,#00E676)&quot;></div>
-      </div>
-
-      <div class=&quot;two-col&quot;>
-        <div class=&quot;card card-accepted&quot;>
-          <div class=&quot;icon&quot; style=&quot;background:rgba(0,230,118,0.15);border:1px solid #00E676;&quot;>🔗</div>
-          <span class=&quot;tag&quot;>// Stage 2 //</span>
-          <h2>SHEETS +<br>LOOKER STUDIO</h2>
-          <p>Connected Google Sheets data directly into Looker Studio for richer, more dynamic visualisations and better design control.</p>
-          <span class=&quot;badge&quot;>✓ ACCEPTED</span>
-          <div class=&quot;number&quot;>2</div>
-        </div>
-        <div class=&quot;card card-accepted&quot; style=&quot;border-color:#00C853;box-shadow:0 0 20px rgba(0,200,83,0.2)&quot;>
-          <div class=&quot;icon&quot; style=&quot;background:rgba(0,200,83,0.15);border:1px solid #00C853;&quot;>✅</div>
-          <span class=&quot;tag&quot;>// Result //</span>
-          <h2>DESIGN<br>APPROVED</h2>
-          <p>The design was <strong style=&quot;color:#69F0AE&quot;>visually compelling</strong> and met stakeholder expectations. Approved and greenlit for use in reporting.</p>
-          <div class=&quot;number&quot;>✓</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MERGE + PROBLEM CONNECTOR -->
-    <div class=&quot;merge&quot;>
-      <div class=&quot;arrow-down&quot;></div>
-    </div>
-
-    <!-- PROBLEM FACED -->
-    <div class=&quot;row&quot;>
-      <div class=&quot;card card-warn&quot; style=&quot;max-width:600px;margin:0 auto;width:100%&quot;>
-        <div class=&quot;icon&quot; style=&quot;background:rgba(255,23,68,0.15);border:1px solid #FF1744;&quot;>⚠️</div>
-        <span class=&quot;tag&quot;>// 03 — Friction Point //</span>
-        <h2>PROBLEM FACED</h2>
-        <p>Despite approval, the workflow was <strong style=&quot;color:#FF8A80&quot;>painful in practice</strong> — time-consuming, required two people to operate, and introduced confusion in handoffs and data updates.</p>
-        <div class=&quot;number&quot;>03</div>
-      </div>
-    </div>
-
-    <div class=&quot;v-connector&quot; style=&quot;height:40px;background:linear-gradient(180deg,#FF1744,#00B0FF)&quot;></div>
-
-    <!-- FINAL SOLUTION -->
-    <div class=&quot;row&quot;>
-      <div class=&quot;card card-final&quot; style=&quot;max-width:640px;margin:0 auto;width:100%&quot;>
-        <div class=&quot;icon&quot; style=&quot;background:rgba(0,176,255,0.15);border:1px solid #00B0FF;&quot;>🚀</div>
-        <span class=&quot;tag&quot;>// 04 — Final Solution //</span>
-        <h2>EDITABLE PUBLIC<br>WEBSITE</h2>
-        <p>Built a <strong style=&quot;color:#80D8FF&quot;>custom editable website</strong> referencing the charts, made publicly accessible — solving all prior pain points in one clean solution. Charts update live. No confusion. No bottlenecks.</p>
-        <div class=&quot;number&quot;>04</div>
-      </div>
-    </div>
-
-    <div class=&quot;v-connector&quot; style=&quot;height:40px;background:linear-gradient(180deg,#00B0FF,#00E676)&quot;></div>
-
-    <!-- OUTCOME -->
-    <div class=&quot;row&quot;>
-      <div class=&quot;card card-outcome&quot; style=&quot;max-width:640px;margin:0 auto;width:100%&quot;>
-        <div class=&quot;icon&quot; style=&quot;background:rgba(0,230,118,0.2);border:1px solid #00E676;&quot;>🏆</div>
-        <span class=&quot;tag&quot;>// 05 — Outcome //</span>
-        <h2>THE RESULT</h2>
-        <ul class=&quot;check-list&quot;>
-          <li>Charts are <strong style=&quot;color:#69F0AE&quot;>fully editable</strong> as per requirements</li>
-          <li><strong style=&quot;color:#69F0AE&quot;>Less time-consuming</strong> — faster turnaround</li>
-          <li>Reduced from <strong style=&quot;color:#69F0AE&quot;>2-person job → 1 person</strong></li>
-          <li>Publicly accessible — no tool dependency</li>
-        </ul>
-        <div class=&quot;number&quot;>05</div>
-      </div>
-    </div>
-
-    <div class=&quot;v-connector&quot; style=&quot;height:40px;background:linear-gradient(180deg,#00E676,#FFD600)&quot;></div>
-
-    <!-- IMPROVEMENT -->
-    <div class=&quot;row&quot;>
-      <div class=&quot;card card-improve&quot; style=&quot;max-width:600px;margin:0 auto;width:100%&quot;>
-        <div class=&quot;icon&quot; style=&quot;background:rgba(255,214,0,0.1);border:1px dashed #FFD600;&quot;>🔮</div>
-        <span class=&quot;tag&quot;>// 06 — Next Iteration //</span>
-        <h2>ROOM FOR<br>IMPROVEMENT</h2>
-        <p>Add capability to <strong style=&quot;color:#FFF59D&quot;>auto-compile monthly data</strong> by intelligently aggregating weekly entries — increasing accuracy and eliminating manual reconciliation entirely.</p>
-        <div class=&quot;number&quot;>06</div>
-      </div>
-    </div>
-
-  </div>
-</div>
-</body>
-</html>
-"
-      style="width:100%;border:none;display:block;min-height:1800px;"
-      scrolling="no"
-      title="Performance Creative Tracking System Case Study"
-      onload="this.style.minHeight=(this.contentDocument.body.scrollHeight+40)+'px'"
-    ></iframe>
-  </div>
-  <!-- Final Output Link Panel -->
+  <!-- CS3 Link Panel -->
   <div id="cs3-link-panel" style="margin-top:28px;background:var(--bg3);border:1px solid var(--bo);padding:28px 32px;">
     <div class="lbl" style="margin-bottom:6px;">Final Output Link</div>
     <p style="font-size:12.5px;color:var(--mu);margin-bottom:18px;max-width:520px;">Paste the live link to the final deliverable. Once saved, the button becomes a direct link that opens in a new tab.</p>
@@ -1184,27 +616,21 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
       <input type="url" id="cs3-link-input" placeholder="https://your-link-here.com"
         style="flex:1;min-width:260px;background:var(--bg);border:1px solid var(--bo);color:var(--w);padding:12px 16px;font-family:var(--B);font-size:13px;outline:none;transition:border-color .2s;border-radius:0;"
         onfocus="this.style.borderColor='var(--ac)'" onblur="this.style.borderColor='var(--bo)'">
-      <button id="cs3-save-btn" onclick="cs3SaveLink()" class="btn"
-        style="padding:12px 26px;font-size:11px;cursor:pointer;border:none;">Save Link</button>
+      <button id="cs3-save-btn" onclick="cs3SaveLink()" class="btn" style="padding:12px 26px;font-size:11px;cursor:pointer;border:none;">Save Link</button>
     </div>
     <div id="cs3-goto-row" style="display:none;gap:10px;align-items:center;flex-wrap:wrap;">
-      <a id="cs3-link-anchor" href="#" target="_blank" class="btn"
-        style="font-size:11px;padding:12px 26px;text-decoration:none;">Go to Link &#8599;</a>
-      <button onclick="cs3ClearLink()"
-        style="padding:12px 18px;background:none;border:1px solid var(--bo);color:var(--mu);font-size:11px;cursor:pointer;font-family:var(--B);transition:all .2s;"
-        onmouseover="this.style.borderColor='var(--ac)';this.style.color='var(--w)'"
-        onmouseout="this.style.borderColor='var(--bo)';this.style.color='var(--mu)'">Change Link</button>
+      <a id="cs3-link-anchor" href="#" target="_blank" class="btn" style="font-size:11px;padding:12px 26px;text-decoration:none;">Go to Link &#8599;</a>
+      <button onclick="cs3ClearLink()" style="padding:12px 18px;background:none;border:1px solid var(--bo);color:var(--mu);font-size:11px;cursor:pointer;font-family:var(--B);transition:all .2s;" onmouseover="this.style.borderColor='var(--ac)';this.style.color='var(--w)'" onmouseout="this.style.borderColor='var(--bo)';this.style.color='var(--mu)'">Change Link</button>
       <span id="cs3-saved-url" style="font-size:11px;color:var(--mu);word-break:break-all;"></span>
     </div>
     <div id="cs3-link-status" style="margin-top:10px;font-size:11.5px;min-height:18px;letter-spacing:.02em;"></div>
   </div>
-
   <div class="rule"></div>
   <div class="lbl">Case Study &middot; 04</div>
   <h2 class="h2">ToothBootZ &mdash;<br>Anniversary <span class="r">Poster</span></h2>
   <div class="csgrid">
     <div>
-      <p class="bt" style="margin-bottom:20px;">ToothBootz Dental Clinic needed a high-impact anniversary poster to celebrate their milestone and strengthen their brand presence on social media. The brief called for warm, trustworthy healthcare aesthetics delivered under a tight 5-day deadline.</p>
+      <p class="bt" style="margin-bottom:20px;">ToothBootz Dental Clinic needed a high-impact anniversary poster to celebrate their milestone and strengthen their brand presence on social media.</p>
       <p class="bt">Through a structured creative workflow from brainstorm through stakeholder alignment to final delivery, four polished poster variants were delivered on Day 4 &mdash; a full day ahead of schedule.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:2px;">
@@ -1212,583 +638,25 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
       <div class="cspan"><h3>The Result</h3><p>4 final poster variants delivered on Day 4 &mdash; 1 day ahead of deadline. 5&#9733; client feedback with zero revision cycles after final delivery.</p></div>
     </div>
   </div>
-  <div style="margin:36px 0 0;border:1px solid var(--bo);border-radius:2px;overflow:hidden;background:#07070E;">
-    <div style="padding:14px 22px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);">
-      <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ac);font-weight:600;">Case Study Flow</span>
-      <span style="font-size:9px;color:rgba(255,255,255,0.25);letter-spacing:.06em;">ToothBootZ Anniversary Offer Poster</span>
-    </div>
-    <iframe srcdoc="<!DOCTYPE html>
-<html>
-<head>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Mono:ital,wght@0,400;0,500;1,400&amp;family=Syne:wght@800&amp;display=swap');
-
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: #07070E;
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── BACKGROUND ── */
-  .bg-noise {
-    position: fixed; inset: 0; pointer-events: none;
-    background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E&quot;);
-    background-size: 200px 200px; opacity: 0.6;
-  }
-
-  .bg-glow {
-    position: fixed; inset: 0; pointer-events: none;
-    background:
-      radial-gradient(ellipse 55% 35% at 15% 50%, rgba(255,61,172,0.07) 0%, transparent 70%),
-      radial-gradient(ellipse 55% 35% at 85% 50%, rgba(0,230,118,0.06) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 30% at 50% 0%, rgba(124,77,255,0.05) 0%, transparent 70%);
-  }
-
-  /* ── CANVAS ── */
-  .canvas { max-width: 1280px; margin: 0 auto; padding: 44px 28px 56px; position: relative; }
-
-  /* ── HEADER ── */
-  .header {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    margin-bottom: 48px;
-    animation: fadeDown 0.7s ease both;
-  }
-
-  .header-left .eyebrow {
-    font-size: 10px; letter-spacing: 6px; color: #FF3CAC;
-    text-transform: uppercase; display: block; margin-bottom: 10px;
-  }
-
-  .header-left h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(44px, 6vw, 80px);
-    color: #fff; letter-spacing: 3px; line-height: 0.9;
-  }
-  .header-left h1 em { color: #FF3CAC; font-style: normal; }
-
-  .kpis { display: flex; gap: 24px; align-items: flex-end; }
-
-  .kpi { text-align: center; }
-  .kpi-val {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 52px; line-height: 1; display: block;
-  }
-  .kpi-sub {
-    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-    opacity: 0.35; color: #fff; display: block; margin-top: 3px;
-  }
-  .kpi-divider { width: 1px; height: 48px; background: rgba(255,255,255,0.08); }
-
-  /* ── HORIZONTAL TRACK ── */
-  .track-wrapper { position: relative; margin-bottom: 32px; }
-
-  /* SPINE LINE */
-  .spine {
-    position: absolute;
-    top: 54px; left: 48px; right: 48px; height: 2px;
-    background: linear-gradient(90deg,
-      #FF3CAC 0%, #7C4DFF 20%, #2979FF 40%, #FF6D00 60%, #00BFA5 80%, #00E676 100%
-    );
-    z-index: 0;
-  }
-
-  .spine::after {
-    content: '';
-    position: absolute;
-    right: -8px; top: -5px;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 10px solid #00E676;
-  }
-
-  /* ── STEPS ROW ── */
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 14px;
-    position: relative; z-index: 1;
-  }
-
-  /* ── STEP ── */
-  .step {
-    display: flex; flex-direction: column; align-items: center;
-    animation: riseUp 0.5s ease both;
-    cursor: default;
-  }
-
-  .step:nth-child(1) { animation-delay: 0.05s; }
-  .step:nth-child(2) { animation-delay: 0.15s; }
-  .step:nth-child(3) { animation-delay: 0.25s; }
-  .step:nth-child(4) { animation-delay: 0.35s; }
-  .step:nth-child(5) { animation-delay: 0.45s; }
-  .step:nth-child(6) { animation-delay: 0.55s; }
-
-  /* ICON BUBBLE */
-  .bubble {
-    width: 52px; height: 52px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; position: relative; z-index: 2;
-    margin-bottom: 16px; transition: transform 0.3s;
-    flex-shrink: 0;
-  }
-  .step:hover .bubble { transform: scale(1.18) rotate(-5deg); }
-
-  /* CARD */
-  .card {
-    border-radius: 8px; padding: 20px 16px 18px; width: 100%;
-    position: relative; overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .step:hover .card { transform: translateY(-6px); }
-
-  .card-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 72px; position: absolute;
-    right: -6px; bottom: -14px; opacity: 0.05;
-    line-height: 1; pointer-events: none; color: #fff;
-  }
-
-  .card .tag {
-    font-size: 8px; letter-spacing: 4px; text-transform: uppercase;
-    opacity: 0.55; display: block; margin-bottom: 8px;
-  }
-  .card h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(16px, 1.8vw, 22px);
-    letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 8px;
-  }
-  .card p { font-size: 10.5px; line-height: 1.7; opacity: 0.72; }
-
-  .badge {
-    display: inline-block; padding: 3px 10px;
-    border-radius: 2px; font-size: 8px;
-    letter-spacing: 3px; text-transform: uppercase;
-    font-weight: 700; margin-top: 10px;
-  }
-
-  /* THEMES */
-  .c1 { background: linear-gradient(145deg,#160610,#240d1c); border: 1.5px solid #FF3CAC; }
-  .c1 .tag { color: #FF3CAC; } .c1 h3 { color: #FF90CE; }
-  .c1:hover { box-shadow: 0 12px 40px rgba(255,60,172,0.3); }
-  .b1 { background: rgba(255,60,172,0.12); border: 2px solid #FF3CAC; box-shadow: 0 0 16px rgba(255,60,172,0.35); }
-
-  .c2 { background: linear-gradient(145deg,#0d0a20,#180f35); border: 1.5px solid #7C4DFF; }
-  .c2 .tag { color: #B388FF; } .c2 h3 { color: #CE9FFF; }
-  .c2:hover { box-shadow: 0 12px 40px rgba(124,77,255,0.3); }
-  .b2 { background: rgba(124,77,255,0.12); border: 2px solid #7C4DFF; box-shadow: 0 0 16px rgba(124,77,255,0.35); }
-
-  .c3 { background: linear-gradient(145deg,#070e1c,#0c1830); border: 1.5px solid #2979FF; }
-  .c3 .tag { color: #82B1FF; } .c3 h3 { color: #A0C4FF; }
-  .c3:hover { box-shadow: 0 12px 40px rgba(41,121,255,0.3); }
-  .b3 { background: rgba(41,121,255,0.12); border: 2px solid #2979FF; box-shadow: 0 0 16px rgba(41,121,255,0.35); }
-
-  .c4 { background: linear-gradient(145deg,#150900,#241200); border: 1.5px solid #FF6D00; }
-  .c4 .tag { color: #FFAB40; } .c4 h3 { color: #FFD080; }
-  .c4:hover { box-shadow: 0 12px 40px rgba(255,109,0,0.3); }
-  .b4 { background: rgba(255,109,0,0.12); border: 2px solid #FF6D00; box-shadow: 0 0 16px rgba(255,109,0,0.35); }
-
-  .c5 { background: linear-gradient(145deg,#071410,#0d2018); border: 1.5px solid #00BFA5; }
-  .c5 .tag { color: #64FFDA; } .c5 h3 { color: #A0FFE8; }
-  .c5:hover { box-shadow: 0 12px 40px rgba(0,191,165,0.3); }
-  .b5 { background: rgba(0,191,165,0.12); border: 2px solid #00BFA5; box-shadow: 0 0 16px rgba(0,191,165,0.35); }
-
-  .c6 {
-    background: linear-gradient(145deg,#001c0c,#002e14);
-    border: 2px solid #00E676;
-    animation: pulseG 2.8s ease-in-out infinite;
-  }
-  .c6 .tag { color: #00E676; } .c6 h3 { color: #69F0AE; }
-  .b6 { background: rgba(0,230,118,0.15); border: 2px solid #00E676; box-shadow: 0 0 20px rgba(0,230,118,0.5); }
-
-  @keyframes pulseG {
-    0%,100% { box-shadow: 0 0 24px rgba(0,230,118,0.2); }
-    50% { box-shadow: 0 0 48px rgba(0,230,118,0.45), 0 0 80px rgba(0,230,118,0.1); }
-  }
-
-  /* ── TIMELINE BAR ── */
-  .tl-section {
-    margin-top: 12px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 8px; padding: 28px 32px 24px;
-    animation: fadeUp 0.6s ease 0.7s both;
-  }
-
-  .tl-header {
-    display: flex; justify-content: space-between;
-    align-items: center; margin-bottom: 20px;
-  }
-
-  .tl-title {
-    font-size: 9px; letter-spacing: 5px; color: rgba(255,255,255,0.25);
-    text-transform: uppercase;
-  }
-
-  .tl-result {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px; color: #00E676;
-    letter-spacing: 2px;
-    text-shadow: 0 0 20px rgba(0,230,118,0.5);
-  }
-
-  .tl-bar-wrap {
-    position: relative; height: 40px;
-  }
-
-  /* day markers */
-  .day-marks {
-    display: flex; justify-content: space-between;
-    position: absolute; top: 0; left: 0; right: 0;
-  }
-
-  .day-mark {
-    font-size: 9px; letter-spacing: 2px;
-    text-transform: uppercase; text-align: center;
-    color: rgba(255,255,255,0.2); width: 20%;
-  }
-
-  .bars { position: absolute; top: 18px; left: 0; right: 0; height: 10px; }
-
-  /* bg track */
-  .bar-bg {
-    position: absolute; inset: 0;
-    background: rgba(255,255,255,0.04);
-    border-radius: 6px;
-  }
-
-  /* sketch bar */
-  .bar-sketch {
-    position: absolute; top: 0; left: 0;
-    height: 100%; width: 40%;
-    background: linear-gradient(90deg, #7C4DFF, #2979FF);
-    border-radius: 6px 0 0 6px;
-    overflow: hidden;
-  }
-
-  /* final bar */
-  .bar-final {
-    position: absolute; top: 0; left: 0;
-    height: 100%; width: 80%;
-    background: linear-gradient(90deg, #FF3CAC 0%, #7C4DFF 30%, #2979FF 55%, #00BFA5 80%, #00E676 100%);
-    border-radius: 6px;
-    opacity: 0.6;
-  }
-
-  /* MARKERS */
-  .tl-marker {
-    position: absolute; top: -16px;
-    transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center;
-  }
-
-  .tl-marker .m-dot {
-    width: 12px; height: 12px; border-radius: 50%;
-    margin-top: 26px;
-    position: relative; z-index: 3;
-  }
-
-  .tl-marker .m-label {
-    font-size: 9px; letter-spacing: 2px; white-space: nowrap;
-  }
-  .tl-marker .m-day {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px; line-height: 1;
-  }
-
-  /* shimmer */
-  .bar-sketch::after {
-    content: '';
-    position: absolute; top: 0; left: -60px;
-    width: 40px; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-    animation: shimmer 2.5s ease-in-out infinite;
-  }
-
-  @keyframes shimmer {
-    0% { left: -60px; }
-    100% { left: 110%; }
-  }
-
-  /* ── STATS ROW ── */
-  .stats-row {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px; margin-top: 12px;
-    animation: fadeUp 0.6s ease 0.9s both;
-  }
-
-  .stat-card {
-    border-radius: 8px; padding: 18px 20px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.07);
-    transition: border-color 0.3s;
-  }
-
-  .stat-card:hover { border-color: rgba(255,255,255,0.15); }
-
-  .stat-card .s-label {
-    font-size: 8px; letter-spacing: 4px;
-    text-transform: uppercase; opacity: 0.3;
-    color: #fff; margin-bottom: 8px; display: block;
-  }
-
-  .stat-card .s-val {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 30px; letter-spacing: 1px; line-height: 1;
-  }
-
-  .stat-card .s-sub {
-    font-size: 10px; opacity: 0.45; margin-top: 4px;
-  }
-
-  .check { list-style: none; }
-  .check li {
-    font-size: 10.5px; opacity: 0.65;
-    padding: 3px 0; display: flex; gap: 8px; align-items: flex-start;
-  }
-  .check li::before { content: '▸'; font-size: 8px; opacity: 0.5; flex-shrink: 0; padding-top: 2px; }
-
-  @keyframes riseUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-</style>
-</head>
-<body>
-<div class=&quot;bg-noise&quot;></div>
-<div class=&quot;bg-glow&quot;></div>
-
-<div class=&quot;canvas&quot;>
-
-  <!-- HEADER -->
-  <div class=&quot;header&quot;>
-    <div class=&quot;header-left&quot;>
-      <span class=&quot;eyebrow&quot;>// Creative Case Study — Poster Design //</span>
-      <h1>Anniversary<br><em>Offer</em> Poster</h1>
-    </div>
-    <div class=&quot;kpis&quot;>
-      <div class=&quot;kpi&quot;>
-        <span class=&quot;kpi-val&quot; style=&quot;color:#FF6D00&quot;>5</span>
-        <span class=&quot;kpi-sub&quot;>Days Expected</span>
-      </div>
-      <div class=&quot;kpi-divider&quot;></div>
-      <div class=&quot;kpi&quot;>
-        <span class=&quot;kpi-val&quot; style=&quot;color:#2979FF&quot;>2</span>
-        <span class=&quot;kpi-sub&quot;>Sketch Delivered</span>
-      </div>
-      <div class=&quot;kpi-divider&quot;></div>
-      <div class=&quot;kpi&quot;>
-        <span class=&quot;kpi-val&quot; style=&quot;color:#00E676&quot;>4</span>
-        <span class=&quot;kpi-sub&quot;>Final Delivered</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- HORIZONTAL TRACK -->
-  <div class=&quot;track-wrapper&quot;>
-    <div class=&quot;spine&quot;></div>
-
-    <div class=&quot;steps&quot;>
-
-      <!-- 01 BRAINSTORM -->
-      <div class=&quot;step&quot;>
-        <div class=&quot;bubble b1&quot;>🎯</div>
-        <div class=&quot;card c1&quot;>
-          <span class=&quot;card-num&quot;>01</span>
-          <span class=&quot;tag&quot;>// 01 — Start //</span>
-          <h3>BRAINSTORM<br>POSTER IDEA</h3>
-          <p>Kicked off the creative process — ideating concepts, formats &amp; directions for the anniversary campaign.</p>
-          <span class=&quot;badge&quot; style=&quot;background:rgba(255,60,172,0.15);color:#FF3CAC;border:1px solid #FF3CAC;&quot;>Kick-off</span>
-        </div>
-      </div>
-
-      <!-- 02 DISCUSSION -->
-      <div class=&quot;step&quot;>
-        <div class=&quot;bubble b2&quot;>🤝</div>
-        <div class=&quot;card c2&quot;>
-          <span class=&quot;card-num&quot;>02</span>
-          <span class=&quot;tag&quot;>// 02 — Align //</span>
-          <h3>STAKEHOLDER<br>DISCUSSION</h3>
-          <p>Multi-level discussions with stakeholders to lock in vision, tone, messaging and visual expectations.</p>
-          <span class=&quot;badge&quot; style=&quot;background:rgba(124,77,255,0.15);color:#B388FF;border:1px solid #7C4DFF;&quot;>Multi-level</span>
-        </div>
-      </div>
-
-      <!-- 03 CONTENT -->
-      <div class=&quot;step&quot;>
-        <div class=&quot;bubble b3&quot;>✍️</div>
-        <div class=&quot;card c3&quot;>
-          <span class=&quot;card-num&quot;>03</span>
-          <span class=&quot;tag&quot;>// 03 — Draft //</span>
-          <h3>CONTENT<br>DRAFTING</h3>
-          <p>Content crafted as per stakeholder requirements — copy, hierarchy, CTAs and all messaging structured.</p>
-          <span class=&quot;badge&quot; style=&quot;background:rgba(41,121,255,0.15);color:#82B1FF;border:1px solid #2979FF;&quot;>Aligned</span>
-        </div>
-      </div>
-
-      <!-- 04 THEME -->
-      <div class=&quot;step&quot;>
-        <div class=&quot;bubble b4&quot;>🎨</div>
-        <div class=&quot;card c4&quot;>
-          <span class=&quot;card-num&quot;>04</span>
-          <span class=&quot;tag&quot;>// 04 — Theme //</span>
-          <h3>SKETCH<br>DELIVERED</h3>
-          <p>Anniversary offer theme locked. Content sketch delivered on <strong style=&quot;color:#FFD080&quot;>Day 2</strong> — 3 days ahead of sketch deadline.</p>
-          <span class=&quot;badge&quot; style=&quot;background:rgba(255,109,0,0.2);color:#FFAB40;border:1px solid #FF6D00;&quot;>⚡ Day 2 — Early</span>
-        </div>
-      </div>
-
-      <!-- 05 REVISION -->
-      <div class=&quot;step&quot;>
-        <div class=&quot;bubble b5&quot;>🔁</div>
-        <div class=&quot;card c5&quot;>
-          <span class=&quot;card-num&quot;>05</span>
-          <span class=&quot;tag&quot;>// 05 — Refine //</span>
-          <h3>REVISIONS<br>SUGGESTED</h3>
-          <p>Stakeholder feedback incorporated. Revisions applied swiftly — keeping the project well within timeline.</p>
-          <span class=&quot;badge&quot; style=&quot;background:rgba(0,191,165,0.15);color:#64FFDA;border:1px solid #00BFA5;&quot;>Feedback Loop</span>
-        </div>
-      </div>
-
-      <!-- 06 FINAL -->
-      <div class=&quot;step&quot;>
-        <div class=&quot;bubble b6&quot;>🏆</div>
-        <div class=&quot;card c6&quot;>
-          <span class=&quot;card-num&quot;>06</span>
-          <span class=&quot;tag&quot;>// 06 — Done //</span>
-          <h3>FINAL<br>DELIVERED</h3>
-          <p>Final poster delivered on <strong style=&quot;color:#69F0AE&quot;>Day 4</strong> — a full day ahead of the 5-day deadline. All revisions included.</p>
-          <span class=&quot;badge&quot; style=&quot;background:rgba(0,230,118,0.2);color:#00E676;border:1px solid #00E676;&quot;>✓ 1 Day Early</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- TIMELINE BAR -->
-  <div class=&quot;tl-section&quot;>
-    <div class=&quot;tl-header&quot;>
-      <span class=&quot;tl-title&quot;>// Delivery Timeline //</span>
-      <span class=&quot;tl-result&quot;>🚀 Delivered 1 Day Ahead of Schedule</span>
-    </div>
-
-    <div class=&quot;tl-bar-wrap&quot;>
-      <div class=&quot;day-marks&quot;>
-        <span class=&quot;day-mark&quot;>Day 0</span>
-        <span class=&quot;day-mark&quot;>Day 1</span>
-        <span class=&quot;day-mark&quot;>Day 2</span>
-        <span class=&quot;day-mark&quot;>Day 3</span>
-        <span class=&quot;day-mark&quot;>Day 4</span>
-        <span class=&quot;day-mark&quot; style=&quot;color:rgba(255,255,255,0.1)&quot;>Day 5 ⏱</span>
-      </div>
-
-      <div class=&quot;bars&quot;>
-        <div class=&quot;bar-bg&quot;></div>
-        <div class=&quot;bar-final&quot;></div>
-        <div class=&quot;bar-sketch&quot;></div>
-
-        <!-- SKETCH MARKER at 40% = Day 2 -->
-        <div class=&quot;tl-marker&quot; style=&quot;left:40%&quot;>
-          <span class=&quot;m-label&quot; style=&quot;color:#2979FF&quot;>Sketch</span>
-          <span class=&quot;m-day&quot; style=&quot;color:#2979FF&quot;>Day 2</span>
-          <div class=&quot;m-dot&quot; style=&quot;background:#2979FF;box-shadow:0 0 10px #2979FF&quot;></div>
-        </div>
-
-        <!-- FINAL MARKER at 80% = Day 4 -->
-        <div class=&quot;tl-marker&quot; style=&quot;left:80%&quot;>
-          <span class=&quot;m-label&quot; style=&quot;color:#00E676&quot;>Final ✓</span>
-          <span class=&quot;m-day&quot; style=&quot;color:#00E676&quot;>Day 4</span>
-          <div class=&quot;m-dot&quot; style=&quot;background:#00E676;box-shadow:0 0 10px #00E676&quot;></div>
-        </div>
-
-        <!-- DEADLINE at 100% = Day 5 -->
-        <div class=&quot;tl-marker&quot; style=&quot;left:100%&quot;>
-          <span class=&quot;m-label&quot; style=&quot;color:rgba(255,255,255,0.2)&quot;>Deadline</span>
-          <span class=&quot;m-day&quot; style=&quot;color:rgba(255,255,255,0.15)&quot;>Day 5</span>
-          <div class=&quot;m-dot&quot; style=&quot;background:rgba(255,255,255,0.1)&quot;></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- STATS ROW -->
-  <div class=&quot;stats-row&quot;>
-    <div class=&quot;stat-card&quot; style=&quot;border-color:rgba(255,60,172,0.2)&quot;>
-      <span class=&quot;s-label&quot;>Project</span>
-      <div class=&quot;s-val&quot; style=&quot;color:#FF90CE;font-size:20px;letter-spacing:0&quot;>Anniversary Offer Poster</div>
-      <p class=&quot;s-sub&quot;>Theme-based creative campaign</p>
-    </div>
-
-    <div class=&quot;stat-card&quot; style=&quot;border-color:rgba(41,121,255,0.2)&quot;>
-      <span class=&quot;s-label&quot;>Workflow Steps</span>
-      <ul class=&quot;check&quot;>
-        <li>Brainstorm → Stakeholder Discussion</li>
-        <li>Content Drafting → Theme Lock</li>
-        <li>Revisions → Final Delivery</li>
-      </ul>
-    </div>
-
-    <div class=&quot;stat-card&quot; style=&quot;border-color:rgba(0,230,118,0.25)&quot;>
-      <span class=&quot;s-label&quot;>Result</span>
-      <div class=&quot;s-val&quot; style=&quot;color:#00E676&quot;>1 DAY EARLY</div>
-      <p class=&quot;s-sub&quot; style=&quot;color:#69F0AE;opacity:0.7&quot;>Day 4 delivered of 5 expected</p>
-      <div style=&quot;margin-top:10px;height:3px;border-radius:2px;background:linear-gradient(90deg,#00E676,#00BFA5);width:80%&quot;></div>
-    </div>
-  </div>
-
-</div>
-</body>
-</html>
-"
-      style="width:100%;min-height:680px;border:none;display:block;" scrolling="no"
-      title="ToothBootZ Anniversary Poster Case Study"
-      onload="this.style.minHeight=(this.contentDocument.body.scrollHeight+40)+'px'"></iframe>
-  </div>
-
 </section>
 
-<!-- CASE STUDY FILES (uploadable) -->
+<!-- CASE STUDY FILES -->
 <section id="cs-upload">
   <div class="lbl">Portfolio</div>
   <h2 class="h2">Case Study <span class="r">Files</span></h2>
-  <p class="bt" style="margin-bottom:48px;">Upload supporting documents, screenshots, decks, and result visuals for each case study. These display alongside your written case studies.</p>
-
-  <!-- CS 01 -->
+  <p class="bt" style="margin-bottom:48px;">Upload supporting documents, screenshots, decks, and result visuals for each case study. <strong style="color:rgba(255,255,255,.4);font-weight:400;">Tap to preview &mdash; hold to remove.</strong></p>
   <div class="cs-block">
     <div class="uzone" id="zn-cs1" style="margin-bottom:24px;"><input type="file" id="inp-cs1" multiple accept="image/*,.pdf,.doc,.docx,video/*" onchange="handleF(this,'cs1')"><div class="uico">&#128194;</div><div class="utitle">Upload Case Study 01 Files</div><div class="usub">Strategy decks, campaign results, analytics screenshots, before/after visuals</div><div class="utypes"><span class="utype">PDF</span><span class="utype">Image</span><span class="utype">Video</span><span class="utype">DOC</span></div></div>
     <div class="fgrid" id="fg-cs1"></div>
-    <div class="cs-block-hd" style="margin-top:28px;margin-bottom:0;">
-      <div class="cs-block-num">01</div>
-      <div><div class="cs-block-title">Bhanzu &mdash; Scaling Engagement to 60%</div><div class="cs-block-meta">Social Media &middot; ORM &middot; Content &middot; Bengaluru &middot; 2025</div></div>
-    </div>
+    <div class="cs-block-hd" style="margin-top:28px;margin-bottom:0;"><div class="cs-block-num">01</div><div><div class="cs-block-title">Bhanzu &mdash; Scaling Engagement to 60%</div><div class="cs-block-meta">Social Media &middot; ORM &middot; Content &middot; Bengaluru &middot; 2025</div></div></div>
   </div>
-
-  <!-- CS 02 -->
   <div class="cs-block">
     <div class="uzone" id="zn-cs2" style="margin-bottom:24px;"><input type="file" id="inp-cs2" multiple accept="image/*,.pdf,.doc,.docx,video/*" onchange="handleF(this,'cs2')"><div class="uico">&#128194;</div><div class="utitle">Upload Case Study 02 Files</div><div class="usub">Ads Manager screenshots, SEO ranking proofs, ROI reports, campaign visuals</div><div class="utypes"><span class="utype">PDF</span><span class="utype">Image</span><span class="utype">Video</span><span class="utype">DOC</span></div></div>
     <div class="fgrid" id="fg-cs2"></div>
-    <div class="cs-block-hd" style="margin-top:28px;margin-bottom:0;">
-      <div class="cs-block-num">02</div>
-      <div><div class="cs-block-title">Rynock Solutions &mdash; Multi-Market Campaigns Dubai</div><div class="cs-block-meta">Paid Social &middot; SEO &middot; Influencer &middot; GCC &middot; 2024&ndash;2025</div></div>
-    </div>
+    <div class="cs-block-hd" style="margin-top:28px;margin-bottom:0;"><div class="cs-block-num">02</div><div><div class="cs-block-title">Rynock Solutions &mdash; Multi-Market Campaigns Dubai</div><div class="cs-block-meta">Paid Social &middot; SEO &middot; Influencer &middot; GCC &middot; 2024&ndash;2025</div></div></div>
   </div>
-
-  <!-- CS Extra -->
   <div class="cs-block">
-    <div class="cs-block-hd">
-      <div class="cs-block-num muted">+</div>
-      <div><div class="cs-block-title" style="color:rgba(255,255,255,.45);">Add Another Case Study</div><div class="cs-block-meta">Name it below, then upload files</div></div>
-    </div>
+    <div class="cs-block-hd"><div class="cs-block-num muted">+</div><div><div class="cs-block-title" style="color:rgba(255,255,255,.45);">Add Another Case Study</div><div class="cs-block-meta">Name it below, then upload files</div></div></div>
     <div class="cs-inputs">
       <input type="text" class="cs-input" id="cs-extra-title" placeholder="Case study title (e.g. ToothBootz Anniversary Campaign)">
       <input type="text" class="cs-input" id="cs-extra-meta" placeholder="Category &middot; Year &middot; Client">
@@ -1798,11 +666,11 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
   </div>
 </section>
 
-<!-- CREATIVES DONE -->
+<!-- CREATIVES -->
 <section id="creatives" style="background:var(--bg2);">
   <div class="lbl">Portfolio</div>
   <h2 class="h2">Creatives <span class="r">Done</span></h2>
-  <p class="bt" style="margin-bottom:36px;">Social media graphics, campaign visuals, brochures, event collateral, posters, and brand assets &mdash; crafted in Adobe Photoshop, Illustrator &amp; InDesign.</p>
+  <p class="bt" style="margin-bottom:36px;">Social media graphics, campaign visuals, brochures, event collateral, posters, and brand assets. <strong style="color:rgba(255,255,255,.4);font-weight:400;">Tap to preview &middot; hold to remove.</strong></p>
   <div class="uzone" id="zn-creatives"><input type="file" id="inp-creatives" multiple accept="image/*,.pdf" onchange="handleF(this,'creatives')"><div class="uico">&#128444;</div><div class="utitle">Upload Creatives</div><div class="usub">Drag &amp; drop or click &mdash; images, posters, graphics, PDFs</div><div class="utypes"><span class="utype">JPG</span><span class="utype">PNG</span><span class="utype">PDF</span><span class="utype">WEBP</span></div></div>
   <div class="fgrid" id="fg-creatives"></div>
 </section>
@@ -1811,18 +679,18 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
 <section id="content" style="background:var(--bg);">
   <div class="lbl">Portfolio</div>
   <h2 class="h2">Content <span class="r">Written</span></h2>
-  <p class="bt" style="margin-bottom:36px;">Long-form content, blog posts, news articles, social captions, and campaign copy &mdash; written with clarity, brand voice, and platform intent.</p>
+  <p class="bt" style="margin-bottom:36px;">Long-form content, blog posts, news articles, social captions, and campaign copy. <strong style="color:rgba(255,255,255,.4);font-weight:400;">Hold ✕ to remove documents.</strong></p>
   <div class="subsecs">
     <div><div class="sublbl">Articles</div><div class="uzone" id="zn-articles"><input type="file" id="inp-articles" multiple accept=".pdf,.doc,.docx,image/*" onchange="handleF(this,'articles')"><div class="uico">&#128240;</div><div class="utitle">Upload Articles</div><div class="usub">News articles, press releases, feature pieces</div><div class="utypes"><span class="utype">PDF</span><span class="utype">DOC</span><span class="utype">Image</span></div></div><div class="fgrid" id="fg-articles"></div></div>
     <div><div class="sublbl">Blog Posts</div><div class="uzone" id="zn-blogs"><input type="file" id="inp-blogs" multiple accept=".pdf,.doc,.docx,image/*" onchange="handleF(this,'blogs')"><div class="uico">&#9997;</div><div class="utitle">Upload Blog Posts</div><div class="usub">Long-form articles, how-to guides, thought leadership</div><div class="utypes"><span class="utype">PDF</span><span class="utype">DOC</span><span class="utype">Image</span></div></div><div class="fgrid" id="fg-blogs"></div></div>
   </div>
 </section>
 
-<!-- VIDEO CREATIVES -->
+<!-- VIDEO -->
 <section id="video" style="background:var(--bg2);">
   <div class="lbl">Portfolio</div>
   <h2 class="h2">Video <span class="r">Creatives</span></h2>
-  <p class="bt" style="margin-bottom:36px;">Reels, short-form brand videos, promotional clips, and video assets edited in DaVinci Resolve &mdash; optimised per platform.</p>
+  <p class="bt" style="margin-bottom:36px;">Reels, short-form brand videos, promotional clips, and video assets edited in DaVinci Resolve.</p>
   <div class="uzone" id="zn-video"><input type="file" id="inp-video" multiple accept="video/*,image/*" onchange="handleF(this,'video')"><div class="uico">&#127909;</div><div class="utitle">Upload Video Creatives</div><div class="usub">Drag &amp; drop video files or thumbnail stills</div><div class="utypes"><span class="utype">MP4</span><span class="utype">MOV</span><span class="utype">WEBM</span><span class="utype">Image</span></div></div>
   <div class="fgrid" id="fg-video"></div>
 </section>
@@ -1831,16 +699,16 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
 <section id="websites" style="background:var(--bg);">
   <div class="lbl">Portfolio</div>
   <h2 class="h2">Websites Handled<br>&amp; <span class="r">Designed</span></h2>
-  <p class="bt" style="margin-bottom:36px;">WordPress websites managed, SEO-optimised pages, and web design work across client brands in India and the GCC &mdash; 40+ pages optimised for search.</p>
+  <p class="bt" style="margin-bottom:36px;">WordPress websites managed, SEO-optimised pages, and web design work across client brands in India and the GCC.</p>
   <div class="uzone" id="zn-websites"><input type="file" id="inp-websites" multiple accept="image/*,.pdf" onchange="handleF(this,'websites')"><div class="uico">&#127760;</div><div class="utitle">Upload Website Screenshots</div><div class="usub">Full-page screenshots, mockups, before/after comparisons</div><div class="utypes"><span class="utype">PNG</span><span class="utype">JPG</span><span class="utype">PDF</span></div></div>
   <div class="fgrid" id="fg-websites"></div>
 </section>
 
-<!-- PERFORMANCE MARKETING -->
+<!-- PERFORMANCE -->
 <section id="perf" style="background:var(--bg2);">
   <div class="lbl">Portfolio</div>
   <h2 class="h2">Performance Marketing <span class="r">Results</span></h2>
-  <p class="bt" style="margin-bottom:36px;">Meta Ads, Google Ads, and paid social results &mdash; dashboards, analytics exports, and campaign screenshots showing real measurable impact.</p>
+  <p class="bt" style="margin-bottom:36px;">Meta Ads, Google Ads, and paid social results &mdash; dashboards, analytics exports, and campaign screenshots.</p>
   <div class="pmgrid">
     <div class="pmcard"><div class="pmval" style="color:var(--ac);">300%</div><div class="pmdesc">Avg Campaign ROI &middot; 3 Brands</div></div>
     <div class="pmcard"><div class="pmval">&minus;<span style="color:var(--ac);">18%</span></div><div class="pmdesc">CPC Reduction via A/B Creative Iteration</div></div>
@@ -1882,33 +750,32 @@ footer{padding:28px 192px;border-top:1px solid var(--bo);display:flex;align-item
 </footer>
 
 <script>
-/* ═══ SUPABASE CONFIG ═══ */
+/* ═══════════════════════════════════════════════════════════════════════
+   SUPABASE CONFIG
+═══════════════════════════════════════════════════════════════════════ */
 var SB_URL    = 'https://arcvzffagsauslonsmcw.supabase.co';
 var SB_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyY3Z6ZmZhZ3NhdXNsb25zbWN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMzUxMzUsImV4cCI6MjA5MTcxMTEzNX0.pfbrd2povmPdkUBo1jQX5W-D1gMwloxNxRoZ1CKBtBc';
 var SB_TABLE  = 'portfolio_links';
-var SB_BUCKET = 'portfolio-files'; /* ✅ FIX 1 — was missing, causing all uploads to fail */
-var SB_READY  = true; /* keys configured */
+var SB_BUCKET = 'portfolio-files';
+var SB_READY  = true;
 
-/* ── Setup banner ─────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', function() {
   loadAllFilesFromCloud();
   restoreCS3Link();
 
-  /* ✅ FIX 2 — lightbox click listener moved inside DOMContentLoaded */
   var lb = document.getElementById('lb');
-  if (lb) {
-    lb.addEventListener('click', function(e) {
-      if (e.target === lb) closeLB();
-    });
-  }
+  if (lb) lb.addEventListener('click', function(e) { if (e.target === lb) closeLB(); });
 
-  /* ✅ FIX 3 — nav dots setup moved inside DOMContentLoaded */
+  /* NAV DOTS */
   var SECS = ['hero','about','skills','knowledge','experience','work','casestudies','cs-upload','creatives','content','video','websites','perf','contact'];
   var dots = document.querySelectorAll('.dot');
   dots.forEach(function(d) {
     d.addEventListener('click', function() {
       var el = document.getElementById(d.dataset.t);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (el) el.scrollIntoView({ behavior:'smooth' });
     });
   });
   var dio = new IntersectionObserver(function(entries) {
@@ -1922,99 +789,66 @@ window.addEventListener('DOMContentLoaded', function() {
   }, { threshold: 0.35 });
   SECS.forEach(function(id) { var el = document.getElementById(id); if (el) dio.observe(el); });
 
-  /* ✅ FIX 4 — drag & drop setup moved inside DOMContentLoaded */
+  /* DRAG & DROP */
   document.querySelectorAll('.uzone').forEach(function(z) {
-    z.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      z.style.borderColor = 'var(--ac)';
-      z.style.background  = 'var(--acs)';
-    });
-    z.addEventListener('dragleave', function() {
-      z.style.borderColor = '';
-      z.style.background  = '';
-    });
+    z.addEventListener('dragover',  function(e) { e.preventDefault(); z.style.borderColor='var(--ac)'; z.style.background='var(--acs)'; });
+    z.addEventListener('dragleave', function()  { z.style.borderColor=''; z.style.background=''; });
     z.addEventListener('drop', function(e) {
-      e.preventDefault();
-      z.style.borderColor = '';
-      z.style.background  = '';
-      var id = z.id.replace('zn-', '');
-      processFiles(e.dataTransfer.files, id);
+      e.preventDefault(); z.style.borderColor=''; z.style.background='';
+      processFiles(e.dataTransfer.files, z.id.replace('zn-',''));
     });
   });
 });
 
-/* keydown listener on document is safe outside DOMContentLoaded */
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLB(); });
 
 /* ═══════════════════════════════════════════════════════════════════════
    SUPABASE HELPERS
 ═══════════════════════════════════════════════════════════════════════ */
-
-/* Upload a file to Storage → return public URL */
 function sbUploadFile(file, cat, onDone, onErr) {
   var path = cat + '/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  var uploadUrl = SB_URL + '/storage/v1/object/' + SB_BUCKET + '/' + path;
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', uploadUrl, true);
+  xhr.open('POST', SB_URL + '/storage/v1/object/' + SB_BUCKET + '/' + path, true);
   xhr.setRequestHeader('apikey', SB_KEY);
   xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
   xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
   xhr.setRequestHeader('x-upsert', 'true');
   xhr.onload = function() {
     if (xhr.status >= 200 && xhr.status < 300) {
-      var publicUrl = SB_URL + '/storage/v1/object/public/' + SB_BUCKET + '/' + path;
-      onDone(publicUrl);
-    } else {
-      onErr('Upload failed: ' + xhr.status + ' ' + xhr.responseText);
-    }
+      onDone(SB_URL + '/storage/v1/object/public/' + SB_BUCKET + '/' + path);
+    } else { onErr('Upload failed: ' + xhr.status); }
   };
-  xhr.onerror = function() { onErr('Network error during upload'); };
+  xhr.onerror = function() { onErr('Network error'); };
   xhr.send(file);
 }
 
-/* Save metadata row → portfolio_links table
-   Tries with 'type' column first; if that column doesn't exist in your table,
-   automatically retries without it so uploads still work. */
 function sbSaveMeta(cat, name, type, url, onDone) {
-  var endpoint = SB_URL + '/rest/v1/' + SB_TABLE;
   function doPost(payload, cb) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', endpoint, true);
+    xhr.open('POST', SB_URL + '/rest/v1/' + SB_TABLE, true);
     xhr.setRequestHeader('apikey', SB_KEY);
     xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.setRequestHeader('Prefer', 'return=representation');
     xhr.onload = function() {
       if (xhr.status >= 200 && xhr.status < 300) {
-        try { cb(null, JSON.parse(xhr.responseText)[0]); } catch(e) { cb(null, null); }
-      } else {
-        cb(xhr.responseText, null);
-      }
+        try { cb(null, JSON.parse(xhr.responseText)[0]); } catch(e) { cb(null,null); }
+      } else { cb(xhr.responseText, null); }
     };
     xhr.onerror = function() { cb('network error', null); };
     xhr.send(JSON.stringify(payload));
   }
-  /* First attempt: with type column */
-  doPost({ cat: cat, name: name, type: type, url: url }, function(err, row) {
+  doPost({ cat:cat, name:name, type:type, url:url }, function(err, row) {
     if (!err) { if (onDone) onDone(row); return; }
-    /* If it failed because 'type' column doesn't exist, retry without it */
     if (err && err.indexOf('"type"') !== -1) {
-      doPost({ cat: cat, name: name, url: url }, function(err2, row2) {
-        if (err2) console.warn('Meta save failed:', err2);
-        if (onDone) onDone(row2);
-      });
-    } else {
-      console.warn('Meta save failed:', err);
-      if (onDone) onDone(null);
-    }
+      doPost({ cat:cat, name:name, url:url }, function(e2, r2) { if (onDone) onDone(r2); });
+    } else { if (onDone) onDone(null); }
   });
 }
 
-/* Delete a row by id */
 function sbDeleteMeta(id, onDone) {
-  var endpoint = SB_URL + '/rest/v1/' + SB_TABLE + '?id=eq.' + id;
   var xhr = new XMLHttpRequest();
-  xhr.open('DELETE', endpoint, true);
+  xhr.open('DELETE', SB_URL + '/rest/v1/' + SB_TABLE + '?id=eq.' + id, true);
   xhr.setRequestHeader('apikey', SB_KEY);
   xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
   xhr.onload = function() { if (onDone) onDone(); };
@@ -2022,11 +856,9 @@ function sbDeleteMeta(id, onDone) {
   xhr.send();
 }
 
-/* Fetch all rows */
 function sbFetchAll(onDone) {
-  var endpoint = SB_URL + '/rest/v1/' + SB_TABLE + '?select=*&order=id.asc';
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', endpoint, true);
+  xhr.open('GET', SB_URL + '/rest/v1/' + SB_TABLE + '?select=*&order=id.asc', true);
   xhr.setRequestHeader('apikey', SB_KEY);
   xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
   xhr.onload = function() {
@@ -2039,36 +871,167 @@ function sbFetchAll(onDone) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   TOAST
+   TOAST (simple, for non-removal messages)
 ═══════════════════════════════════════════════════════════════════════ */
 function showToast(msg, color) {
   var t = document.getElementById('yk-toast');
   if (!t) {
-    t = document.createElement('div');
-    t.id = 'yk-toast';
-    t.style.cssText = [
-      'position:fixed;bottom:28px;right:28px;z-index:9999',
-      'padding:10px 20px;font-size:12px;letter-spacing:.06em',
-      'font-family:var(--B);border-radius:2px',
-      'transition:opacity .4s ease,transform .4s ease',
-      'pointer-events:none;opacity:0;transform:translateY(10px)'
-    ].join(';');
+    t = document.createElement('div'); t.id = 'yk-toast';
+    t.style.cssText = 'position:fixed;bottom:28px;right:28px;z-index:9999;padding:10px 20px;font-size:12px;letter-spacing:.06em;font-family:var(--B);transition:opacity .4s ease,transform .4s ease;pointer-events:none;opacity:0;transform:translateY(10px);';
     document.body.appendChild(t);
   }
+  t.innerHTML = '';
+  t.style.pointerEvents = 'none';
   t.textContent = msg;
   t.style.background = color || '#22c55e';
   t.style.color = '#fff';
   t.style.opacity = '1';
   t.style.transform = 'translateY(0)';
   clearTimeout(t._tid);
-  t._tid = setTimeout(function() {
-    t.style.opacity   = '0';
-    t.style.transform = 'translateY(10px)';
-  }, 2500);
+  t._tid = setTimeout(function() { t.style.opacity='0'; t.style.transform='translateY(10px)'; }, 2500);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   RENDER CARD  —  builds the file thumbnail / doc row in the grid
+   LONG PRESS — 500ms hold triggers removal menu; tap = preview
+═══════════════════════════════════════════════════════════════════════ */
+var LONG_PRESS_MS = 500;
+
+function addLongPress(el, onLong, onTap) {
+  var timer = null, moved = false, startX, startY;
+
+  function startCharge(x, y) {
+    moved = false; startX = x; startY = y;
+    /* animate SVG ring */
+    var ring = el.querySelector('.lp-ring');
+    if (ring) {
+      var c = ring.querySelector('circle');
+      if (c) { c.style.transition = 'none'; c.style.strokeDashoffset = '188'; }
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        if (c) c.style.transition = 'stroke-dashoffset ' + LONG_PRESS_MS + 'ms linear';
+        ring.classList.add('charging');
+      }); });
+    }
+    timer = setTimeout(function() { timer = null; onLong(); }, LONG_PRESS_MS);
+  }
+
+  function cancelCharge() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    var ring = el.querySelector('.lp-ring');
+    if (ring) {
+      ring.classList.remove('charging');
+      var c = ring.querySelector('circle');
+      if (c) { c.style.transition = 'none'; c.style.strokeDashoffset = '188'; }
+    }
+  }
+
+  el.addEventListener('touchstart', function(e) {
+    var t = e.touches[0]; startCharge(t.clientX, t.clientY);
+  }, { passive: true });
+  el.addEventListener('touchmove', function(e) {
+    var t = e.touches[0];
+    if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) { moved = true; cancelCharge(); }
+  }, { passive: true });
+  el.addEventListener('touchend', function() {
+    if (timer && !moved) { cancelCharge(); onTap(); } else { cancelCharge(); }
+  });
+  el.addEventListener('mousedown', function(e) { if (e.button !== 0) return; startCharge(e.clientX, e.clientY); });
+  el.addEventListener('mousemove', function(e) {
+    if (timer && (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5)) { moved = true; cancelCharge(); }
+  });
+  el.addEventListener('mouseup', function() {
+    if (timer && !moved) { cancelCharge(); onTap(); } else { cancelCharge(); }
+  });
+  el.addEventListener('mouseleave', function() { cancelCharge(); });
+  el.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UNDO SYSTEM
+═══════════════════════════════════════════════════════════════════════ */
+function removeFile(el, rowId, cat, name, type, fileUrl) {
+  var parent = el.parentNode, next = el.nextSibling;
+  el.style.transition = 'opacity .25s,transform .25s';
+  el.style.opacity    = '0';
+  el.style.transform  = 'scale(0.88)';
+
+  setTimeout(function() {
+    el.remove();
+    var record = { el:el, parent:parent, next:next, rowId:rowId, committed:false };
+    showUndoToast(record);
+    record._commitTimer = setTimeout(function() {
+      if (!record.committed) {
+        record.committed = true;
+        if (rowId && SB_READY) sbDeleteMeta(rowId, null);
+      }
+    }, 5500);
+  }, 260);
+}
+
+function undoRemove(record) {
+  if (record.committed) { showToast('Already deleted — cannot undo', '#e67e22'); return; }
+  clearTimeout(record._commitTimer);
+  record.committed = true;
+  if (record.next && record.next.parentNode === record.parent) {
+    record.parent.insertBefore(record.el, record.next);
+  } else {
+    record.parent.appendChild(record.el);
+  }
+  record.el.style.transition = 'opacity .32s,transform .32s';
+  record.el.style.opacity = '1';
+  record.el.style.transform = '';
+  showToast('↩ Restored!', '#22c55e');
+}
+
+function showUndoToast(record) {
+  var t = document.getElementById('yk-toast');
+  if (!t) { t = document.createElement('div'); t.id = 'yk-toast'; document.body.appendChild(t); }
+  t.style.cssText = [
+    'position:fixed;bottom:28px;right:28px;z-index:9999',
+    'display:flex;align-items:center;gap:10px',
+    'padding:10px 16px 13px 20px;font-size:12px;letter-spacing:.05em',
+    'font-family:var(--B);background:#1a1a1a;border:1px solid rgba(255,255,255,.12)',
+    'color:#fff;box-shadow:0 8px 32px rgba(0,0,0,.6)',
+    'transition:opacity .4s ease,transform .4s ease;opacity:0;transform:translateY(8px)',
+    'border-radius:2px;overflow:hidden;'
+  ].join(';');
+
+  var bar = document.createElement('div');
+  bar.style.cssText = 'position:absolute;bottom:0;left:0;height:2px;width:100%;background:var(--ac);transform-origin:left;';
+
+  var lbl = document.createElement('span');
+  lbl.innerHTML = 'File removed';
+  lbl.style.cssText = 'flex:1;white-space:nowrap;';
+
+  var btn = document.createElement('button');
+  btn.textContent = 'UNDO';
+  btn.style.cssText = [
+    'background:var(--ac);border:none;color:#fff',
+    'padding:5px 14px;font-size:10px;letter-spacing:.1em',
+    'font-family:var(--B);cursor:pointer;font-weight:700;white-space:nowrap;flex-shrink:0;'
+  ].join(';');
+  btn.addEventListener('click', function() {
+    undoRemove(record);
+    t.style.opacity = '0'; t.style.transform = 'translateY(8px)';
+  });
+
+  t.innerHTML = '';
+  t.appendChild(bar);
+  t.appendChild(lbl);
+  t.appendChild(btn);
+  t.style.pointerEvents = 'auto';
+
+  requestAnimationFrame(function() { requestAnimationFrame(function() {
+    t.style.opacity = '1'; t.style.transform = 'translateY(0)';
+    bar.style.transition = 'transform 5.5s linear';
+    bar.style.transform  = 'scaleX(0)';
+  }); });
+
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function() { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; }, 5700);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RENDER CARD — tap to preview, long-press (500ms) to get remove option
 ═══════════════════════════════════════════════════════════════════════ */
 function renderCard(cat, name, type, fileUrl, rowId) {
   var grid = document.getElementById('fg-' + cat);
@@ -2076,81 +1039,161 @@ function renderCard(cat, name, type, fileUrl, rowId) {
   type = type || '';
   var isVid = type.startsWith('video/');
   var isImg = type.startsWith('image/') || /\.(jpe?g|png|gif|webp|svg|bmp)$/i.test(name);
-  var isPDF = type === 'application/pdf'  || /\.pdf$/i.test(name);
+  var isPDF = type === 'application/pdf' || /\.pdf$/i.test(name);
   var isDoc = /\.(docx?)$/i.test(name);
 
+  /* ── IMAGE / VIDEO THUMBNAIL ── */
   if (isImg || isVid) {
     var th = document.createElement('div');
     th.className = 'fthumb';
     th.dataset.rowid = rowId || '';
+    th.style.cssText += ';user-select:none;-webkit-user-select:none;';
 
     var med = document.createElement(isVid ? 'video' : 'img');
     med.src = fileUrl;
     if (isVid) { med.muted = true; med.preload = 'metadata'; }
+    med.draggable = false;
     th.appendChild(med);
 
     var nm = document.createElement('div');
     nm.className = 'ftnm'; nm.textContent = name;
     th.appendChild(nm);
 
+    /* "Hold to remove" micro-hint on hover */
+    var hint = document.createElement('div');
+    hint.className = 'lp-hint';
+    hint.textContent = 'Hold to remove';
+    th.appendChild(hint);
+
+    /* Charging ring SVG */
+    var ring = document.createElement('div');
+    ring.className = 'lp-ring';
+    ring.innerHTML = '<svg width="64" height="64" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="#d0021b" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90 30 30)"/></svg>';
+    th.appendChild(ring);
+
+    /* Overlay (only visible after long-press via .lp-active) */
     var ov = document.createElement('div'); ov.className = 'ftov';
 
-    var prev = document.createElement('button');
-    prev.className = 'ftrm'; prev.textContent = 'Preview';
-    prev.style.cssText = 'background:var(--bg2);margin-right:6px;';
-    prev.addEventListener('click', function(ev) {
-      ev.stopPropagation(); openLB(fileUrl, isVid, name);
+    var ovName = document.createElement('div');
+    ovName.className = 'ftov-hint';
+    ovName.textContent = name.length > 22 ? name.slice(0,20) + '…' : name;
+
+    var ovBtns = document.createElement('div');
+    ovBtns.style.cssText = 'display:flex;gap:8px;';
+
+    var prevBtn = document.createElement('button');
+    prevBtn.className = 'ftrm';
+    prevBtn.textContent = '▶ Preview';
+    prevBtn.style.cssText = 'background:var(--bg2);border:1px solid rgba(255,255,255,.2);font-size:10px;letter-spacing:.05em;';
+    prevBtn.addEventListener('click', function(ev) {
+      ev.stopPropagation(); ov.classList.remove('lp-active'); openLB(fileUrl, isVid, name);
     });
 
-    var rm = document.createElement('button');
-    rm.className = 'ftrm'; rm.textContent = 'Remove';
-    rm.style.background = 'var(--ac)';
-    rm.addEventListener('click', function(ev) {
-      ev.stopPropagation();
-      if (rowId && SB_READY) sbDeleteMeta(rowId, null);
-      th.remove();
-      showToast('File removed', '#d0021b');
+    var rmBtn = document.createElement('button');
+    rmBtn.className = 'ftrm';
+    rmBtn.textContent = '✕ Remove';
+    rmBtn.style.cssText = 'background:var(--ac);font-size:10px;letter-spacing:.05em;';
+    rmBtn.addEventListener('click', function(ev) {
+      ev.stopPropagation(); ov.classList.remove('lp-active');
+      removeFile(th, rowId, cat, name, type, fileUrl);
     });
 
-    ov.appendChild(prev); ov.appendChild(rm); th.appendChild(ov);
-    th.addEventListener('click', function() { openLB(fileUrl, isVid, name); });
+    ovBtns.appendChild(prevBtn); ovBtns.appendChild(rmBtn);
+    ov.appendChild(ovName); ov.appendChild(ovBtns);
+    th.appendChild(ov);
+
+    /* Long press = show overlay; tap = preview */
+    addLongPress(th,
+      function() {
+        /* vibrate on mobile for tactile feedback */
+        if (navigator.vibrate) navigator.vibrate(30);
+        ov.classList.add('lp-active');
+        clearTimeout(th._autoHide);
+        th._autoHide = setTimeout(function() { ov.classList.remove('lp-active'); }, 3500);
+      },
+      function() {
+        if (ov.classList.contains('lp-active')) {
+          ov.classList.remove('lp-active');
+        } else {
+          openLB(fileUrl, isVid, name);
+        }
+      }
+    );
+
+    /* Clicking outside closes the overlay */
+    document.addEventListener('click', function(e) {
+      if (ov.classList.contains('lp-active') && !th.contains(e.target)) {
+        ov.classList.remove('lp-active');
+      }
+    });
+
     grid.appendChild(th);
 
+  /* ── PDF / DOC ROW ── */
   } else if (isPDF || isDoc) {
     var row = document.createElement('div');
     row.className = 'fdoc'; row.dataset.rowid = rowId || '';
-    var ic  = document.createElement('div'); ic.className = 'fdico';
+    row.style.userSelect = 'none';
+
+    var ic = document.createElement('div'); ic.className = 'fdico';
     ic.textContent = isPDF ? '📄' : '📝';
+
     var fnm = document.createElement('div'); fnm.className = 'fdnm';
     fnm.textContent = name;
+
     var fprev = document.createElement('button');
     fprev.className = 'fdrm'; fprev.title = 'Preview'; fprev.textContent = '👁';
     fprev.style.fontSize = '15px';
-    fprev.addEventListener('click', function(ev) {
-      ev.stopPropagation(); window.open(fileUrl, '_blank');
-    });
+    fprev.addEventListener('click', function(ev) { ev.stopPropagation(); window.open(fileUrl, '_blank'); });
+
+    /* ✕ button — hold (500ms) to confirm removal, progress bar shows intent */
     var frm = document.createElement('button');
-    frm.className = 'fdrm'; frm.textContent = '✕'; frm.title = 'Remove';
-    frm.addEventListener('click', function(ev) {
-      ev.stopPropagation();
-      if (rowId && SB_READY) sbDeleteMeta(rowId, null);
-      row.remove();
-      showToast('File removed', '#d0021b');
-    });
-    row.appendChild(ic); row.appendChild(fnm);
-    row.appendChild(fprev); row.appendChild(frm);
+    frm.className = 'fdrm';
+    frm.title = 'Hold to remove';
+    frm.style.cssText = 'position:relative;overflow:hidden;padding:4px 10px;border-radius:2px;transition:color .2s;';
+    frm.innerHTML = '<span style="pointer-events:none;font-size:14px;">✕</span>';
+
+    var holdBar = document.createElement('div');
+    holdBar.style.cssText = 'position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--ac);';
+    frm.appendChild(holdBar);
+
+    var holdTm = null;
+    function startHold(e) {
+      if (e.type === 'touchstart') e.preventDefault();
+      holdBar.style.transition = 'none'; holdBar.style.width = '0';
+      requestAnimationFrame(function() {
+        holdBar.style.transition = 'width ' + LONG_PRESS_MS + 'ms linear';
+        holdBar.style.width = '100%';
+      });
+      holdTm = setTimeout(function() {
+        holdTm = null; holdBar.style.width = '0'; holdBar.style.transition = 'none';
+        if (navigator.vibrate) navigator.vibrate(30);
+        removeFile(row, rowId, cat, name, type, fileUrl);
+      }, LONG_PRESS_MS);
+    }
+    function stopHold() {
+      if (holdTm) { clearTimeout(holdTm); holdTm = null; }
+      holdBar.style.transition = 'width .2s'; holdBar.style.width = '0';
+    }
+
+    frm.addEventListener('mousedown',  startHold);
+    frm.addEventListener('touchstart', startHold, { passive: false });
+    frm.addEventListener('mouseup',    stopHold);
+    frm.addEventListener('mouseleave', stopHold);
+    frm.addEventListener('touchend',   stopHold);
+    frm.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+    row.appendChild(ic); row.appendChild(fnm); row.appendChild(fprev); row.appendChild(frm);
     row.style.cursor = 'pointer';
     row.addEventListener('click', function(ev) {
-      if (ev.target !== frm && ev.target !== fprev) window.open(fileUrl, '_blank');
+      if (!frm.contains(ev.target) && ev.target !== fprev) window.open(fileUrl, '_blank');
     });
     grid.appendChild(row);
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   UPLOAD  —  called when user picks a file
-   If Supabase is configured: upload to cloud, save meta, render from URL.
-   If not configured: render from local object URL (session only, warns user).
+   UPLOAD
 ═══════════════════════════════════════════════════════════════════════ */
 function uploadAndRender(file, cat) {
   var isVid = file.type.startsWith('video/');
@@ -2160,19 +1203,16 @@ function uploadAndRender(file, cat) {
   if (!isVid && !isImg && !isPDF && !isDoc) return;
 
   if (!SB_READY) {
-    /* Fallback: local preview only */
-    var localUrl = URL.createObjectURL(file);
-    renderCard(cat, file.name, file.type, localUrl, null);
-    showToast('⚠ Session only — configure Supabase to save permanently', '#e67e22');
+    renderCard(cat, file.name, file.type, URL.createObjectURL(file), null);
+    showToast('Session only — configure Supabase to save permanently', '#e67e22');
     return;
   }
 
   showToast('Uploading…', '#2979FF');
   sbUploadFile(file, cat, function(publicUrl) {
     sbSaveMeta(cat, file.name, file.type, publicUrl, function(row) {
-      var rowId = row ? row.id : null;
-      renderCard(cat, file.name, file.type, publicUrl, rowId);
-      showToast('✓ Saved to cloud: ' + file.name);
+      renderCard(cat, file.name, file.type, publicUrl, row ? row.id : null);
+      showToast('✓ Saved: ' + file.name);
     });
   }, function(err) {
     console.error(err);
@@ -2180,7 +1220,6 @@ function uploadAndRender(file, cat) {
   });
 }
 
-/* ── public entry points ── */
 function handleF(inp, cat) {
   if (!inp.files || !inp.files.length) return;
   Array.from(inp.files).forEach(function(f) { uploadAndRender(f, cat); });
@@ -2191,57 +1230,51 @@ function processFiles(files, cat) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   LOAD ALL FILES FROM CLOUD  —  runs on every page load for every visitor
+   LOAD FROM CLOUD
 ═══════════════════════════════════════════════════════════════════════ */
 function loadAllFilesFromCloud() {
   if (!SB_READY) return;
   sbFetchAll(function(rows) {
     rows.forEach(function(row) {
-      if (row.cat === 'cs3_link') return; /* link rows — not file cards */
+      if (row.cat === 'cs3_link') return;
       renderCard(row.cat, row.name, row.type || '', row.url, row.id);
     });
   });
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   CS3 LINK  —  saved to Supabase table row (cat='cs3_link') + localStorage
+   CS3 LINK
 ═══════════════════════════════════════════════════════════════════════ */
 function cs3ShowSavedState(url) {
-  var inputRow  = document.getElementById('cs3-input-row');
-  var gotoRow   = document.getElementById('cs3-goto-row');
-  var anchor    = document.getElementById('cs3-link-anchor');
-  var savedSpan = document.getElementById('cs3-saved-url');
-  var status    = document.getElementById('cs3-link-status');
-  if (inputRow)  inputRow.style.display  = 'none';
-  if (gotoRow)   gotoRow.style.display   = 'flex';
-  if (anchor)    anchor.href             = url;
-  if (savedSpan) savedSpan.textContent   = url;
-  if (status)  { status.innerHTML = '&#10003; Saved.'; status.style.color = '#22c55e'; }
+  var ir = document.getElementById('cs3-input-row');
+  var gr = document.getElementById('cs3-goto-row');
+  var an = document.getElementById('cs3-link-anchor');
+  var ss = document.getElementById('cs3-saved-url');
+  var st = document.getElementById('cs3-link-status');
+  if (ir) ir.style.display = 'none';
+  if (gr) gr.style.display = 'flex';
+  if (an) an.href = url;
+  if (ss) ss.textContent = url;
+  if (st) { st.innerHTML = '&#10003; Saved.'; st.style.color = '#22c55e'; }
 }
 function cs3ShowInputState() {
-  var inputRow = document.getElementById('cs3-input-row');
-  var gotoRow  = document.getElementById('cs3-goto-row');
-  var status   = document.getElementById('cs3-link-status');
-  if (inputRow) inputRow.style.display = 'flex';
-  if (gotoRow)  gotoRow.style.display  = 'none';
-  if (status)   status.textContent     = '';
+  var ir = document.getElementById('cs3-input-row');
+  var gr = document.getElementById('cs3-goto-row');
+  var st = document.getElementById('cs3-link-status');
+  if (ir) ir.style.display = 'flex';
+  if (gr) gr.style.display = 'none';
+  if (st) st.textContent = '';
 }
 function cs3SaveLink() {
-  var inp    = document.getElementById('cs3-link-input');
-  var status = document.getElementById('cs3-link-status');
+  var inp = document.getElementById('cs3-link-input');
+  var st  = document.getElementById('cs3-link-status');
   if (!inp) return;
   var url = inp.value.trim();
-  if (!url) {
-    if (status) { status.textContent = 'Please paste a URL first.'; status.style.color = 'var(--ac)'; }
-    return;
-  }
+  if (!url) { if (st) { st.textContent = 'Please paste a URL first.'; st.style.color = 'var(--ac)'; } return; }
   if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) url = 'https://' + url;
   inp.value = url;
   try { localStorage.setItem('cs3_output_link', url); } catch(e) {}
-  /* Also save to Supabase so every visitor sees the same link */
-  if (SB_READY) {
-    sbSaveMeta('cs3_link', 'cs3_output_link', 'text/plain', url, null);
-  }
+  if (SB_READY) sbSaveMeta('cs3_link', 'cs3_output_link', 'text/plain', url, null);
   cs3ShowSavedState(url);
 }
 function cs3ClearLink() {
@@ -2251,30 +1284,25 @@ function cs3ClearLink() {
   cs3ShowInputState();
 }
 function restoreCS3Link() {
-  /* Try cloud first, fall back to localStorage */
-  if (SB_READY) {
-    var endpoint = SB_URL + '/rest/v1/' + SB_TABLE + '?cat=eq.cs3_link&order=id.desc&limit=1';
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', endpoint, true);
-    xhr.setRequestHeader('apikey', SB_KEY);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
-    xhr.onload = function() {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          var rows = JSON.parse(xhr.responseText);
-          if (rows.length && rows[0].url) { cs3ShowSavedState(rows[0].url); return; }
-        } catch(e) {}
-      }
-      /* Cloud had nothing — check localStorage */
-      try { var ls = localStorage.getItem('cs3_output_link'); if (ls) cs3ShowSavedState(ls); } catch(e) {}
-    };
-    xhr.onerror = function() {
-      try { var ls = localStorage.getItem('cs3_output_link'); if (ls) cs3ShowSavedState(ls); } catch(e) {}
-    };
-    xhr.send();
-  } else {
+  if (!SB_READY) {
     try { var ls = localStorage.getItem('cs3_output_link'); if (ls) cs3ShowSavedState(ls); } catch(e) {}
+    return;
   }
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', SB_URL + '/rest/v1/' + SB_TABLE + '?cat=eq.cs3_link&order=id.desc&limit=1', true);
+  xhr.setRequestHeader('apikey', SB_KEY);
+  xhr.setRequestHeader('Authorization', 'Bearer ' + SB_KEY);
+  xhr.onload = function() {
+    try {
+      var rows = JSON.parse(xhr.responseText);
+      if (rows.length && rows[0].url) { cs3ShowSavedState(rows[0].url); return; }
+    } catch(e) {}
+    try { var ls = localStorage.getItem('cs3_output_link'); if (ls) cs3ShowSavedState(ls); } catch(e) {}
+  };
+  xhr.onerror = function() {
+    try { var ls = localStorage.getItem('cs3_output_link'); if (ls) cs3ShowSavedState(ls); } catch(e) {}
+  };
+  xhr.send();
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
